@@ -12,19 +12,17 @@ export function toString(param) {
 }
 
 export function memoize(func, resolver = toString) {
-  const cacheMap = {};
+  const cacheMap = new Map();
   function memoized(...args) {
     // Used in safe context
     // eslint-disable-next-line no-restricted-syntax
     const key = resolver(...args);
-    let cache = cacheMap[key];
-    if (!cache) {
-      cache = {
-        value: func.apply(this, args),
-      };
-      cacheMap[key] = cache;
+    const cache = cacheMap.get(key);
+    if (cache === undefined) {
+      const value = func.apply(this, args);
+      cacheMap.set(key, value);
     }
-    return cache.value;
+    return cache;
   }
   return memoized;
 }
